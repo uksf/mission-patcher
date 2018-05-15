@@ -85,7 +85,7 @@ namespace MissionPatcher.Data {
         public static List<Player> ResolveGroupSlots(Lobby lobby, Group group) {
             List<Player> slots = new List<Player>();
             int max = 8;
-            int fillerCount = 0;
+            int fillerCount;
             switch (group.Id) {
                 case "5a435eea905d47336442c75a": // "Joint Special Forces Aviation Wing"
                     slots.AddRange(lobby.Groups.Find(x => x.Id == "5a435eea905d47336442c75a").Members);

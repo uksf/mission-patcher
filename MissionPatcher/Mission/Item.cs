@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using MissionPatcher.Data;
 
 namespace MissionPatcher.Mission {
@@ -84,15 +84,18 @@ namespace MissionPatcher.Mission {
         }
 
         public bool Ignore() {
-            return _rawItem.Any(x => x.ToLower().Contains("@ignore"));
+            bool ignored = _rawItem.Any(x => x.ToLower().Contains("@ignore"));
+            if (!ignored || !Program.ArgForce) return ignored;
+            Console.WriteLine("Item tried to ignore, but patching is forced");
+            return false;
         }
 
         public void Patch(int index) {
             _rawItem[0] = $"class Item{index}";
         }
 
-        public string Serialize() {
-            StringBuilder serialized = new StringBuilder();
+        public IEnumerable<string> Serialize() {
+            List<string> serialized = new List<string>();
             if (_rawEntities.Count > 0) {
                 int start = Utility.GetIndexByKey(_rawItem, "Entities");
                 int count = _rawEntities.Count;
@@ -101,10 +104,10 @@ namespace MissionPatcher.Mission {
             }
 
             foreach (string s in _rawItem) {
-                serialized.AppendLine(s);
+                serialized.Add(s);
             }
 
-            return serialized.ToString();
+            return serialized;
         }
     }
 }

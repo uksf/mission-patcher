@@ -24,7 +24,7 @@ namespace MissionPatcher.Data {
         public List<Rank> Ranks;
         public List<Group> Groups;
         public List<Group> OrderedGroups;
-        public List<Player> Players;
+        private List<Player> _players;
 
         public int Setup() {
             try {
@@ -51,7 +51,7 @@ namespace MissionPatcher.Data {
                 Callsign = x["callsign"].ToString()
             }).ToList();
 
-            Players = JArray.FromObject(data["accounts"]).Select(x => new Player {
+            _players = JArray.FromObject(data["accounts"]).Select(x => new Player {
                 Id = x["id"].ToString(),
                 Rank = Ranks.FirstOrDefault(r => r.Name == x["rank"].ToString()),
                 Name = x["displayName"].ToString(),
@@ -63,18 +63,18 @@ namespace MissionPatcher.Data {
                 group.Parent = Groups.FirstOrDefault(g => g.Id == group.ParentId);
                 group.Members = string.IsNullOrEmpty(group.MembersString)
                                     ? new List<Player>()
-                                    : JArray.Parse(group.MembersString).Select(x => Players.FirstOrDefault(p => p.Id == x.ToString())).ToList();
+                                    : JArray.Parse(group.MembersString).Select(x => _players.FirstOrDefault(p => p.Id == x.ToString())).ToList();
                 if (string.IsNullOrEmpty(group.RolesString)) {
                     group.Roles = new Dictionary<string, Player>();
                 } else {
                     Dictionary<string, string> dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(group.RolesString);
-                    group.Roles = dictionary.ToDictionary(pair => pair.Key, pair => Players.FirstOrDefault(p => p.Id == pair.Value));
+                    group.Roles = dictionary.ToDictionary(pair => pair.Key, pair => _players.FirstOrDefault(p => p.Id == pair.Value));
                 }
 
                 group.Callsign = Resolver.ResolveCallsign(group, group.Callsign);
             }
 
-            foreach (Player player in Players) {
+            foreach (Player player in _players) {
                 player.Group = Groups.FirstOrDefault(g => g.Name == player.GroupName);
                 player.ObjectClass = Resolver.ResolveObjectClass(player);
             }

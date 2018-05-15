@@ -45,7 +45,7 @@ namespace MissionPatcher.Mission {
             _itemsCount = _items.Count;
             List<string> serialized = new List<string> {"class Entities", "{", $"items = {_itemsCount};"};
             foreach (Item item in _items) {
-                serialized.Add($"{item.Serialize()}");
+                serialized.AddRange(item.Serialize());
             }
 
             serialized.Add("};");
