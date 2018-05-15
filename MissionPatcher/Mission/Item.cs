@@ -22,7 +22,12 @@ namespace MissionPatcher.Mission {
                 }
             } else if (ItemType.Equals("Object")) {
                 string isPlayable = Utility.ReadSingleDataByKey(_rawItem, "isPlayable").ToString();
-                if (!string.IsNullOrEmpty(isPlayable)) IsPlayable = isPlayable == "1";
+                string isPlayer = Utility.ReadSingleDataByKey(_rawItem, "isPlayer").ToString();
+                if (!string.IsNullOrEmpty(isPlayable)) {
+                    IsPlayable = isPlayable == "1";
+                } else if (!string.IsNullOrEmpty(isPlayer)) {
+                    IsPlayable = isPlayer == "1";
+                }
             }
         }
 

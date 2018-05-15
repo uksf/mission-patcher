@@ -119,11 +119,17 @@ namespace MissionPatcher.Mission {
         }
 
         private int PatchDescription() {
-            int playable = _sqmLines.Count(x => x.Replace(" ", "").Contains("isPlayable=1"));
+            int playable = _sqmLines.Count(x => x.Replace(" ", "").Contains("isPlayable=1") || x.Replace(" ", "").Contains("isPlayer=1"));
             if (!File.Exists(_descPath)) return playable;
             Console.WriteLine("Updating description max players");
             _descLines = File.ReadAllLines(_descPath).ToList();
             _descLines[_descLines.FindIndex(x => x.Contains("maxPlayers"))] = $"    maxPlayers = {playable};";
+            int index = _descLines.FindIndex(x => x.Contains("respawnOnStart"));
+            if (index != -1) {
+                _descLines[index] = "    respawnOnStart = 1;";
+            } else {
+                _descLines.Add("    respawnOnStart = 1;");
+            }
             File.WriteAllLines(_descPath, _descLines);
             return playable;
         }
