@@ -18,6 +18,7 @@ namespace MissionPatcher.Data {
 
         private const string USERNAME = "server";
         private const string PASSWORD = "DernaldIVesTRyleWoonESeisHFA";
+        private const string CACHE = "cache";
 
         private string _token;
 
@@ -28,8 +29,7 @@ namespace MissionPatcher.Data {
 
         public int Setup() {
             try {
-                Login();
-                GetLobbyData();
+                GetLobbyData(Login());
                 OrderGroups();
             } catch (Exception exception) {
                 Console.WriteLine($"\t{exception.Message}");
@@ -103,33 +103,49 @@ namespace MissionPatcher.Data {
             }
         }
 
-        private void GetLobbyData() {
-            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(URI + "accounts/serverlobby");
-            request.Headers.Add(HttpRequestHeader.Authorization.ToString(), _token);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+        private void GetLobbyData(bool useCache) {
             JObject data;
-            using (HttpWebResponse response = (HttpWebResponse) request.GetResponse()) {
-                using (Stream stream = response.GetResponseStream()) {
-                    if (stream == null) return;
-                    using (StreamReader reader = new StreamReader(stream)) {
-                        data = JObject.Parse(reader.ReadToEnd());
+            if (useCache) {
+                if (File.Exists(CACHE)) {
+                    data = JObject.Parse(File.ReadAllText(CACHE));
+                } else {
+                    throw new FileNotFoundException();
+                }
+            } else {
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(URI + "accounts/serverlobby");
+                request.Headers.Add(HttpRequestHeader.Authorization.ToString(), _token);
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse()) {
+                    using (Stream stream = response.GetResponseStream()) {
+                        if (stream == null) return;
+                        using (StreamReader reader = new StreamReader(stream)) {
+                            data = JObject.Parse(reader.ReadToEnd());
+                            if (data == null) {
+                                throw new ArgumentNullException($"{nameof(data)}");
+                            }
+
+                            File.WriteAllText(CACHE, data.ToString());
+                        }
                     }
                 }
-            }
-
-            if (data == null) {
-                throw new ArgumentNullException($"{nameof(data)}");
             }
 
             ParseLobbyData(data);
         }
 
-        private void Login() {
-            HttpClient httpClient = new HttpClient();
-            string json = JsonConvert.SerializeObject(new {loginid = USERNAME, password = PASSWORD});
-            StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponse = httpClient.PostAsync(URI + "authtoken", httpContent).Result;
-            _token = "bearer " + JObject.Parse(httpResponse.Content.ReadAsStringAsync().Result)["token"];
+        private bool Login() {
+            try {
+                using (HttpClient httpClient = new HttpClient()) {
+                    string json = JsonConvert.SerializeObject(new {loginid = USERNAME, password = PASSWORD});
+                    StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                    httpClient.Timeout = TimeSpan.FromSeconds(5);
+                    HttpResponseMessage httpResponse = httpClient.PostAsync(URI + "authtoken", httpContent).Result;
+                    _token = "bearer " + JObject.Parse(httpResponse.Content.ReadAsStringAsync().Result)["token"];
+                    return false;
+                }
+            } catch (Exception) {
+                return true;
+            }
         }
     }
 }

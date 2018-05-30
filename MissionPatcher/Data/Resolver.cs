@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MissionPatcher.Data {
     public static class Resolver {
         public static string ResolveObjectClass(Player player) {
-            if (player.Id == "5a4518559220c31b50966811" || player.Id == "5a1a0ad55d0a76133837eb78") { // Clarke & Pothoven
+            if (player.Id == "5a4518559220c31b50966811" || player.Id == "59e38f13594c603b78aa9dbf") { // Clarke & Carr
                 return "UKSF_B_PathfinderMedic";
             }
 

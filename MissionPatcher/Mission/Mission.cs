@@ -126,9 +126,9 @@ namespace MissionPatcher.Mission {
             _descLines[_descLines.FindIndex(x => x.Contains("maxPlayers"))] = $"    maxPlayers = {playable};";
             int index = _descLines.FindIndex(x => x.Contains("respawnOnStart"));
             if (index != -1) {
-                _descLines[index] = "    respawnOnStart = 1;";
+                _descLines[index] = "respawnOnStart = 1;";
             } else {
-                _descLines.Add("    respawnOnStart = 1;");
+                _descLines.Add("respawnOnStart = 1;");
             }
             File.WriteAllLines(_descPath, _descLines);
             return playable;
