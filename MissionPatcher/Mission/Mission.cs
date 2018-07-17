@@ -25,7 +25,7 @@ namespace MissionPatcher.Mission {
         }
 
         public int Read() {
-            if (Ignored()) return PatchDescription();
+            bool ignored = Ignored();
             if (CheckBinned()) {
                 Console.WriteLine($"Mission is binned, unbinning");
                 UnBin();
@@ -37,7 +37,7 @@ namespace MissionPatcher.Mission {
             _sqmLines.RemoveAll(string.IsNullOrEmpty);
             RemoveUnbinText();
             ReadAllData();
-            return 0;
+            return ignored ? PatchDescription() : 0;
         }
 
         public void Patch(Lobby lobby) {
