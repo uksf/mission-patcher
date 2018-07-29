@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionPatcher", "MissionPatcher\MissionPatcher.csproj", "{A13FB565-F3AA-4058-A97F-3DAC128829CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mission-patcher", "mission-patcher\mission-patcher.csproj", "{A13FB565-F3AA-4058-A97F-3DAC128829CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -106,26 +107,30 @@ namespace MissionPatcher.Data {
         private void GetLobbyData(bool useCache) {
             JObject data;
             if (useCache) {
+                Console.WriteLine($"Failed to login, using cache");
                 if (File.Exists(CACHE)) {
                     data = JObject.Parse(File.ReadAllText(CACHE));
                 } else {
                     throw new FileNotFoundException();
                 }
             } else {
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(URI + "accounts/serverlobby");
-                request.Headers.Add(HttpRequestHeader.Authorization.ToString(), _token);
-                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                using (HttpWebResponse response = (HttpWebResponse) request.GetResponse()) {
-                    using (Stream stream = response.GetResponseStream()) {
-                        if (stream == null) return;
-                        using (StreamReader reader = new StreamReader(stream)) {
-                            data = JObject.Parse(reader.ReadToEnd());
-                            if (data == null) {
-                                throw new ArgumentNullException($"{nameof(data)}");
-                            }
-
-                            File.WriteAllText(CACHE, data.ToString());
+                try {
+                    using (HttpClient client = new HttpClient()) {
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+                        string response = client.GetStringAsync($"{URI}accounts/serverlobby").Result;
+                        data = JObject.Parse(response);
+                        if (data == null) {
+                            throw new ArgumentNullException(nameof(data));
                         }
+
+                        File.WriteAllText(CACHE, data.ToString());
+                    }
+                } catch (Exception) {
+                    Console.WriteLine($"Failed to retrieve data, using cache");
+                    if (File.Exists(CACHE)) {
+                        data = JObject.Parse(File.ReadAllText(CACHE));
+                    } else {
+                        throw new FileNotFoundException();
                     }
                 }
             }
@@ -135,12 +140,17 @@ namespace MissionPatcher.Data {
 
         private bool Login() {
             try {
-                using (HttpClient httpClient = new HttpClient()) {
-                    string json = JsonConvert.SerializeObject(new {loginid = USERNAME, password = PASSWORD});
-                    StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                    httpClient.Timeout = TimeSpan.FromSeconds(5);
-                    HttpResponseMessage httpResponse = httpClient.PostAsync(URI + "authtoken", httpContent).Result;
-                    _token = "bearer " + JObject.Parse(httpResponse.Content.ReadAsStringAsync().Result)["token"];
+                using (HttpClient client = new HttpClient())
+                {
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(new {
+                        username = USERNAME,
+                        password = PASSWORD
+                    }), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = client.PostAsync($"{URI}authtoken/server", content).Result;
+                    if (!response.IsSuccessStatusCode) {
+                        return true;
+                    }
+                    _token = response.Content.ReadAsStringAsync().Result;
                     return false;
                 }
             } catch (Exception) {

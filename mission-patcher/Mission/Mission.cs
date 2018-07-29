@@ -130,6 +130,10 @@ namespace MissionPatcher.Mission {
             } else {
                 _descLines.Add("respawnOnStart = 1;");
             }
+            index = _descLines.FindIndex(x => x.Contains("__EXEC"));
+            if (index != -1) {
+                _descLines.RemoveAt(index);
+            }
             File.WriteAllLines(_descPath, _descLines);
             return playable;
         }
