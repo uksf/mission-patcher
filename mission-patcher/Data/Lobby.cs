@@ -87,8 +87,8 @@ namespace MissionPatcher.Data {
             InsertGroupChildren(OrderedGroups, parent);
             OrderedGroups.RemoveAll(x => !Resolver.IsGroupPermanent(x) && x.Members.Count == 0 || string.IsNullOrEmpty(x.Callsign));
             Resolver.ResolveSpecialGroups(ref OrderedGroups);
-            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a4284b155d6109bf0b081c1", "5ad748e0de5d414f4c4055e0"); // "UKSF Medical Group, RAMC" after "Guardian 1-R"
-            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a42845c55d6109bf0b081c0", "5a4284b155d6109bf0b081c1"); // "18th Signal Regiment" after "UKSF Medical Group, RAMC"
+            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5b9123ca7a6c1f0e9875601c", "5ad748e0de5d414f4c4055e0"); // "3 Medical Regiment" after "Guardian 1-R"
+            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a42845c55d6109bf0b081c0", "5b9123ca7a6c1f0e9875601c"); // "18th Signal Regiment" after "3 Medical Regiment"
             Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a68b28e196530164c9b4fed", "5a42845c55d6109bf0b081c0"); // "Sniper Platoon" after "18th Signal Regiment"
             Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a68c047196530164c9b4fee", "5a68b28e196530164c9b4fed"); // "The Pathfinder Platoon" after "Sniper Platoon"
         }

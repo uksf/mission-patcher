@@ -22,10 +22,10 @@ namespace MissionPatcher.Data {
                     return "UKSF_B_Sniper";
                 case "5a68c047196530164c9b4fee": // "The Pathfinder Platoon"
                     return "UKSF_B_Pathfinder";
-                case "5a4284b155d6109bf0b081c1": // "UKSF Medical Group, RAMC"
+                case "5b9123ca7a6c1f0e9875601c": // "3 Medical Regiment"
                     return "UKSF_B_Medic";
-                case "5a42835b55d6109bf0b081bd": // "ELCOM"
-                    if (ResolvePlayerGroupRole(player).Item1 == "1ic") {
+                case "5a42835b55d6109bf0b081bd": // "UKSF"
+                    if (ResolvePlayerGroupRole(player).Item1 == "1iC") {
                         return "UKSF_B_Officer";
                     }
 
@@ -40,8 +40,8 @@ namespace MissionPatcher.Data {
         }
 
         private static Tuple<string, int> ResolvePlayerGroupRole(Player player) {
-            if (player.Group.Roles.ContainsKey("1ic") && player.Group.Roles["1ic"] == player) return new Tuple<string, int>("1ic", 2);
-            if (player.Group.Roles.ContainsKey("2ic") && player.Group.Roles["2ic"] == player) return new Tuple<string, int>("2ic", 1);
+            if (player.Group.Roles.ContainsKey("1iC") && player.Group.Roles["1iC"] == player) return new Tuple<string, int>("1iC", 2);
+            if (player.Group.Roles.ContainsKey("2iC") && player.Group.Roles["2iC"] == player) return new Tuple<string, int>("2iC", 1);
             if (player.Group.Roles.ContainsKey("NCOiC") && player.Group.Roles["NCOiC"] == player) return new Tuple<string, int>("NCOiC", 0);
             return new Tuple<string, int>("", -1);
         }
