@@ -72,7 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Group.cs" />
+    <Compile Include="Data\Unit.cs" />
     <Compile Include="Data\Lobby.cs" />
     <Compile Include="Data\Player.cs" />
     <Compile Include="Data\Rank.cs" />

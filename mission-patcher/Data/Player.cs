@@ -1,6 +1,6 @@
 ﻿namespace MissionPatcher.Data {
     public class Player {
-        public Group Group;
+        public Unit Unit;
         public string GroupName;
         public string Id;
         public string Name;

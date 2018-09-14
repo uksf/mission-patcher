@@ -15,7 +15,7 @@ namespace MissionPatcher.Mission {
         public Item(List<string> rawItem) {
             _rawItem = rawItem;
             ItemType = Utility.ReadSingleDataByKey(_rawItem, "dataType").ToString();
-            if (ItemType.Equals("Group")) {
+            if (ItemType.Equals("Unit")) {
                 _rawEntities = Utility.ReadDataByKey(_rawItem, "Entities");
                 if (_rawEntities.Count > 0) {
                     Entities = new Entities(_rawEntities);
@@ -46,7 +46,7 @@ namespace MissionPatcher.Mission {
             _rawItem.Add("class Attributes");
             _rawItem.Add("{");
             _rawItem.Add("isPlayable=1;");
-            _rawItem.Add($"description=\"{player.Name}{(string.IsNullOrEmpty(player.Role) ? "" : $" - {player.Role}")}@{Resolver.ResolveCallsign(player.Group, player.Group.Callsign)}\";");
+            _rawItem.Add($"description=\"{player.Name}{(string.IsNullOrEmpty(player.Role) ? "" : $" - {player.Role}")}@{Resolver.ResolveCallsign(player.Unit, player.Unit.Callsign)}\";");
             _rawItem.Add("};");
             _rawItem.Add("};");
         }
@@ -55,7 +55,7 @@ namespace MissionPatcher.Mission {
             Entities = entities;
             _rawItem.Add("class Item");
             _rawItem.Add("{");
-            _rawItem.Add("dataType=\"Group\";");
+            _rawItem.Add("dataType=\"Unit\";");
             _rawItem.Add("side=\"West\";");
             _rawItem.Add($"id={Mission.NextId++};");
             _rawItem.Add("class Entities");

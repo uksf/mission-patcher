@@ -10,11 +10,8 @@ using Newtonsoft.Json.Linq;
 
 namespace MissionPatcher.Data {
     public class Lobby {
-#if DEBUG
         private const string URI = "http://localhost:5000/api/";
-#else
-        private const string URI = "http://api.uk-sf.com/api/";
-#endif
+        //private const string URI = "http://api.uk-sf.com/api/";
 
         private const string USERNAME = "server";
         private const string PASSWORD = "DernaldIVesTRyleWoonESeisHFA";
@@ -23,14 +20,14 @@ namespace MissionPatcher.Data {
         private string _token;
 
         public List<Rank> Ranks;
-        public List<Group> Groups;
-        public List<Group> OrderedGroups;
+        public List<Unit> Units;
+        public List<Unit> OrderedUnits;
         private List<Player> _players;
 
         public int Setup() {
             try {
                 GetLobbyData(Login());
-                OrderGroups();
+                OrderUnits();
             } catch (Exception exception) {
                 Console.WriteLine($"\t{exception.Message}");
                 return 1;
@@ -42,7 +39,7 @@ namespace MissionPatcher.Data {
         private void ParseLobbyData(JObject data) {
             Ranks = JArray.FromObject(data["ranks"]).Select(x => new Rank {Name = x["name"].ToString()}).ToList();
 
-            Groups = JArray.FromObject(data["groups"]).Select(x => new Group {
+            Units = JArray.FromObject(data["units"]).Select(x => new Unit {
                 Id = x["id"].ToString(),
                 Name = x["name"].ToString(),
                 ParentId = x["parent"].ToString(),
@@ -59,47 +56,47 @@ namespace MissionPatcher.Data {
                 GroupName = x["unitAssignment"].ToString()
             }).ToList();
 
-            foreach (Group group in Groups) {
-                group.Parent = Groups.FirstOrDefault(g => g.Id == group.ParentId);
-                group.Members = string.IsNullOrEmpty(group.MembersString)
+            foreach (Unit unit in Units) {
+                unit.Parent = Units.FirstOrDefault(g => g.Id == unit.ParentId);
+                unit.Members = string.IsNullOrEmpty(unit.MembersString)
                                     ? new List<Player>()
-                                    : JArray.Parse(group.MembersString).Select(x => _players.FirstOrDefault(p => p.Id == x.ToString())).ToList();
-                if (string.IsNullOrEmpty(group.RolesString)) {
-                    group.Roles = new Dictionary<string, Player>();
+                                    : JArray.Parse(unit.MembersString).Select(x => _players.FirstOrDefault(p => p.Id == x.ToString())).ToList();
+                if (string.IsNullOrEmpty(unit.RolesString)) {
+                    unit.Roles = new Dictionary<string, Player>();
                 } else {
-                    Dictionary<string, string> dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(group.RolesString);
-                    group.Roles = dictionary.ToDictionary(pair => pair.Key, pair => _players.FirstOrDefault(p => p.Id == pair.Value));
+                    Dictionary<string, string> dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(unit.RolesString);
+                    unit.Roles = dictionary.ToDictionary(pair => pair.Key, pair => _players.FirstOrDefault(p => p.Id == pair.Value));
                 }
 
-                group.Callsign = Resolver.ResolveCallsign(group, group.Callsign);
+                unit.Callsign = Resolver.ResolveCallsign(unit, unit.Callsign);
             }
 
             foreach (Player player in _players) {
-                player.Group = Groups.FirstOrDefault(g => g.Name == player.GroupName);
+                player.Unit = Units.FirstOrDefault(g => g.Name == player.GroupName);
                 player.ObjectClass = Resolver.ResolveObjectClass(player);
             }
         }
 
-        private void OrderGroups() {
-            OrderedGroups = new List<Group>();
-            Group parent = Groups.First(x => x.Parent == null);
-            OrderedGroups.Add(parent);
-            InsertGroupChildren(OrderedGroups, parent);
-            OrderedGroups.RemoveAll(x => !Resolver.IsGroupPermanent(x) && x.Members.Count == 0 || string.IsNullOrEmpty(x.Callsign));
-            Resolver.ResolveSpecialGroups(ref OrderedGroups);
-            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5b9123ca7a6c1f0e9875601c", "5ad748e0de5d414f4c4055e0"); // "3 Medical Regiment" after "Guardian 1-R"
-            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a42845c55d6109bf0b081c0", "5b9123ca7a6c1f0e9875601c"); // "18th Signal Regiment" after "3 Medical Regiment"
-            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a68b28e196530164c9b4fed", "5a42845c55d6109bf0b081c0"); // "Sniper Platoon" after "18th Signal Regiment"
-            Resolver.ResolveSpecialGroupOrder(ref OrderedGroups, "5a68c047196530164c9b4fee", "5a68b28e196530164c9b4fed"); // "The Pathfinder Platoon" after "Sniper Platoon"
+        private void OrderUnits() {
+            OrderedUnits = new List<Unit>();
+            Unit parent = Units.First(x => x.Parent == null);
+            OrderedUnits.Add(parent);
+            InsertUnitChildren(OrderedUnits, parent);
+            OrderedUnits.RemoveAll(x => !Resolver.IsUnitPermanent(x) && x.Members.Count == 0 || string.IsNullOrEmpty(x.Callsign));
+            Resolver.ResolveSpecialUnits(ref OrderedUnits);
+            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5b9123ca7a6c1f0e9875601c", "5ad748e0de5d414f4c4055e0"); // "3 Medical Regiment" after "Guardian 1-R"
+            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5a42845c55d6109bf0b081c0", "5b9123ca7a6c1f0e9875601c"); // "18th Signal Regiment" after "3 Medical Regiment"
+            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5a68b28e196530164c9b4fed", "5a42845c55d6109bf0b081c0"); // "Sniper Platoon" after "18th Signal Regiment"
+            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5a68c047196530164c9b4fee", "5a68b28e196530164c9b4fed"); // "The Pathfinder Platoon" after "Sniper Platoon"
         }
 
-        private void InsertGroupChildren(List<Group> newGroups, Group parent) {
-            List<Group> children = Groups.Where(x => x.Parent == parent).ToList();
+        private void InsertUnitChildren(List<Unit> newUnits, Unit parent) {
+            List<Unit> children = Units.Where(x => x.Parent == parent).ToList();
             if (children.Count == 0) return;
-            int index = newGroups.IndexOf(parent);
-            newGroups.InsertRange(index + 1, children);
-            foreach (Group child in children) {
-                InsertGroupChildren(newGroups, child);
+            int index = newUnits.IndexOf(parent);
+            newUnits.InsertRange(index + 1, children);
+            foreach (Unit child in children) {
+                InsertUnitChildren(newUnits, child);
             }
         }
 
