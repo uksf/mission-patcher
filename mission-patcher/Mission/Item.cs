@@ -15,7 +15,7 @@ namespace MissionPatcher.Mission {
         public Item(List<string> rawItem) {
             _rawItem = rawItem;
             ItemType = Utility.ReadSingleDataByKey(_rawItem, "dataType").ToString();
-            if (ItemType.Equals("Unit")) {
+            if (ItemType.Equals("Group")) {
                 _rawEntities = Utility.ReadDataByKey(_rawItem, "Entities");
                 if (_rawEntities.Count > 0) {
                     Entities = new Entities(_rawEntities);
@@ -55,7 +55,7 @@ namespace MissionPatcher.Mission {
             Entities = entities;
             _rawItem.Add("class Item");
             _rawItem.Add("{");
-            _rawItem.Add("dataType=\"Unit\";");
+            _rawItem.Add("dataType=\"Group\";");
             _rawItem.Add("side=\"West\";");
             _rawItem.Add($"id={Mission.NextId++};");
             _rawItem.Add("class Entities");

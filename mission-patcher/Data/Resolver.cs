@@ -76,13 +76,13 @@ namespace MissionPatcher.Data {
             orderedUnits = newOrderedUnits;
         }
 
-        public static void ResolveSpecialUnitOrder(ref List<Unit> orderedGroups, string unitId, string unitBeforeId) {
-            Unit unit = orderedGroups.Find(x => x.Id == unitId);
-            orderedGroups.Remove(unit);
-            orderedGroups.Insert(orderedGroups.FindIndex(x => x.Id == unitBeforeId) + 1, unit);
+        public static void ResolveSpecialUnitOrder(ref List<Unit> orderedUnits, string unitId, string unitBeforeId) {
+            Unit unit = orderedUnits.Find(x => x.Id == unitId);
+            orderedUnits.Remove(unit);
+            orderedUnits.Insert(orderedUnits.FindIndex(x => x.Id == unitBeforeId) + 1, unit);
         }
 
-        public static List<Player> ResolveGroupSlots(Lobby lobby, Unit unit) {
+        public static List<Player> ResolveUnitSlots(Lobby lobby, Unit unit) {
             List<Player> slots = new List<Player>();
             int max = 8;
             int fillerCount;

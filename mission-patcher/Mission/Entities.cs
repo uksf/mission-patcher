@@ -14,7 +14,7 @@ namespace MissionPatcher.Mission {
         }
 
         private Entities(Lobby lobby, Unit unit) {
-            List<Player> slots = Resolver.ResolveGroupSlots(lobby, unit);
+            List<Player> slots = Resolver.ResolveUnitSlots(lobby, unit);
             for (int i = 0; i < slots.Count; i++) {
                 _items.Add(new Item(slots[i], i));
             }
@@ -28,10 +28,10 @@ namespace MissionPatcher.Mission {
         }
 
         public void Patch(Lobby lobby) {
-            _items.RemoveAll(x => x.ItemType.Equals("Unit") && x.Entities != null && x.Entities._items.All(y => y.IsPlayable && !y.Ignore()));
-            foreach (Unit lobbyGroup in lobby.OrderedUnits) {
-                Entities entities = new Entities(lobby, lobbyGroup);
-                _items.Add(new Item(entities, lobbyGroup.Callsign));
+            _items.RemoveAll(x => x.ItemType.Equals("Group") && x.Entities != null && x.Entities._items.All(y => y.IsPlayable && !y.Ignore()));
+            foreach (Unit lobbyUnit in lobby.OrderedUnits) {
+                Entities entities = new Entities(lobby, lobbyUnit);
+                _items.Add(new Item(entities, lobbyUnit.Callsign));
             }
 
             _itemsCount = _items.Count;

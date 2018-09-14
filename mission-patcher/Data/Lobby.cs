@@ -53,7 +53,7 @@ namespace MissionPatcher.Data {
                 Rank = Ranks.FirstOrDefault(r => r.Name == x["rank"].ToString()),
                 Name = x["displayName"].ToString(),
                 Role = x["roleAssignment"].ToString(),
-                GroupName = x["unitAssignment"].ToString()
+                UnitName = x["unitAssignment"].ToString()
             }).ToList();
 
             foreach (Unit unit in Units) {
@@ -72,7 +72,7 @@ namespace MissionPatcher.Data {
             }
 
             foreach (Player player in _players) {
-                player.Unit = Units.FirstOrDefault(g => g.Name == player.GroupName);
+                player.Unit = Units.FirstOrDefault(g => g.Name == player.UnitName);
                 player.ObjectClass = Resolver.ResolveObjectClass(player);
             }
         }
