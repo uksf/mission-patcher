@@ -98,10 +98,10 @@ namespace MissionPatcher {
 
                 Process process = new Process {
                     StartInfo = {
-                        FileName = MAKE_PBO,//-P 
-                        Arguments = $"-Z -BD -X=thumbs.db,*.txt,*.h,*.dep,*.cpp,*.bak,*.png,*.log,*.pew \"{_folderPath}\"",
+                        FileName = MAKE_PBO,
+                        Arguments = $"-Z -BD -P -X=thumbs.db,*.txt,*.h,*.dep,*.cpp,*.bak,*.png,*.log,*.pew \"{_folderPath}\"",
                         UseShellExecute = false,
-                        CreateNoWindow = false
+                        CreateNoWindow = true
                     }
                 };
                 process.Start();
