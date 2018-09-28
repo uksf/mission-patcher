@@ -10,8 +10,8 @@ using Newtonsoft.Json.Linq;
 
 namespace MissionPatcher.Data {
     public class Lobby {
-        private const string URI = "http://localhost:5000/api/";
-        //private const string URI = "http://api.uk-sf.com/api/";
+        //private const string URI = "http://localhost:5000/api/";
+        private const string URI = "http://api.uk-sf.com/api/";
 
         private const string USERNAME = "server";
         private const string PASSWORD = "DernaldIVesTRyleWoonESeisHFA";
