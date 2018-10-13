@@ -4,10 +4,6 @@ using System.Collections.Generic;
 namespace MissionPatcher.Data {
     public static class Resolver {
         public static string ResolveObjectClass(Player player) {
-            if (player.Id == "5a4518559220c31b50966811" || player.Id == "59e38f13594c603b78aa9dbf") { // Clarke & Carr
-                return "UKSF_B_PathfinderMedic";
-            }
-
             switch (player.Unit.Id) {
                 case "5a435eea905d47336442c75a": // "Joint Special Forces Aviation Wing"
                 case "5a848590eab14d12cc7fa618": // "JSFAW Training Unit"
@@ -105,9 +101,9 @@ namespace MissionPatcher.Data {
                     }
 
                     break;
-                case "5a42c24bc507851c6068c9ad": // "Guardian 1-1"
-                case "5a42c373512b5a82e08beb98": // "Guardian 1-2"
-                case "5ad7406e6aa15057044b6959": // "Guardian 1-3"
+                case "5bbbb9645eb3a4170c488b36": // "Guardian 1-1"
+                case "5bbbbdab5eb3a4170c488f2e": // "Guardian 1-2"
+                case "5bbbbe365eb3a4170c488f30": // "Guardian 1-3"
                     slots.AddRange(unit.Members);
                     fillerCount = max - slots.Count;
                     for (int i = 0; i < fillerCount; i++) {
@@ -142,9 +138,9 @@ namespace MissionPatcher.Data {
 
         public static bool IsUnitPermanent(Unit unit) {
             switch (unit.Id) {
-                case "5a42c24bc507851c6068c9ad": // "Guardian 1-1"
-                case "5a42c373512b5a82e08beb98": // "Guardian 1-2"
-                case "5ad7406e6aa15057044b6959": // "Guardian 1-3"
+                case "5bbbb9645eb3a4170c488b36": // "Guardian 1-1"
+                case "5bbbbdab5eb3a4170c488f2e": // "Guardian 1-2"
+                case "5bbbbe365eb3a4170c488f30": // "Guardian 1-3"
                 case "5ad748e0de5d414f4c4055e0": // "Guardian 1-R"
                     return true;
                 default: return false;

@@ -11,5 +11,6 @@ namespace MissionPatcher.Data {
         public string ParentId;
         public Dictionary<string, Player> Roles;
         public string RolesString;
+        public int Order;
     }
 }

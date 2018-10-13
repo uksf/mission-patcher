@@ -10,8 +10,8 @@ using Newtonsoft.Json.Linq;
 
 namespace MissionPatcher.Data {
     public class Lobby {
-        private const string URI = "http://localhost:5000/api/";
-        //private const string URI = "http://api.uk-sf.com/api/";
+        //private const string URI = "http://localhost:5000/api/";
+        private const string URI = "http://api.uk-sf.com/api/";
 
         private const string USERNAME = "server";
         private const string PASSWORD = "DernaldIVesTRyleWoonESeisHFA";
@@ -45,7 +45,8 @@ namespace MissionPatcher.Data {
                 ParentId = x["parent"].ToString(),
                 MembersString = x["members"].ToString(),
                 RolesString = x["roles"].ToString(),
-                Callsign = x["callsign"].ToString()
+                Callsign = x["callsign"].ToString(),
+                Order = int.Parse(x["order"].ToString())
             }).ToList();
 
             _players = JArray.FromObject(data["accounts"]).Select(x => new Player {
@@ -84,14 +85,10 @@ namespace MissionPatcher.Data {
             InsertUnitChildren(OrderedUnits, parent);
             OrderedUnits.RemoveAll(x => !Resolver.IsUnitPermanent(x) && x.Members.Count == 0 || string.IsNullOrEmpty(x.Callsign));
             Resolver.ResolveSpecialUnits(ref OrderedUnits);
-            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5b9123ca7a6c1f0e9875601c", "5ad748e0de5d414f4c4055e0"); // "3 Medical Regiment" after "Guardian 1-R"
-            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5a42845c55d6109bf0b081c0", "5b9123ca7a6c1f0e9875601c"); // "18th Signal Regiment" after "3 Medical Regiment"
-            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5a68b28e196530164c9b4fed", "5a42845c55d6109bf0b081c0"); // "Sniper Platoon" after "18th Signal Regiment"
-            Resolver.ResolveSpecialUnitOrder(ref OrderedUnits, "5a68c047196530164c9b4fee", "5a68b28e196530164c9b4fed"); // "The Pathfinder Platoon" after "Sniper Platoon"
         }
 
         private void InsertUnitChildren(List<Unit> newUnits, Unit parent) {
-            List<Unit> children = Units.Where(x => x.Parent == parent).ToList();
+            List<Unit> children = Units.Where(x => x.Parent == parent).OrderBy(x => x.Order).ToList();
             if (children.Count == 0) return;
             int index = newUnits.IndexOf(parent);
             newUnits.InsertRange(index + 1, children);
@@ -103,7 +100,7 @@ namespace MissionPatcher.Data {
         private void GetLobbyData(bool useCache) {
             JObject data;
             if (useCache) {
-                Console.WriteLine($"Failed to login, using cache");
+                Console.WriteLine("Failed to login, using cache");
                 if (File.Exists(CACHE)) {
                     data = JObject.Parse(File.ReadAllText(CACHE));
                 } else {
