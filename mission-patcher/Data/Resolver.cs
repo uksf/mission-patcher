@@ -18,16 +18,21 @@ namespace MissionPatcher.Data {
                     return "UKSF_B_Sniper";
                 case "5a68c047196530164c9b4fee": // "The Pathfinder Platoon"
                     return "UKSF_B_Pathfinder";
+                case "5bbbb8875eb3a4170c488b24": // "Air Troop"
+                case "5bbbb89e5eb3a4170c488b26": // "Mobility Troop"
+                    return "UKSF_B_SAS";
+                case "5ba8983ee12a331f94cb02d4": // "SAS"
+                    return "UKSF_B_Officer";
                 case "5b9123ca7a6c1f0e9875601c": // "3 Medical Regiment"
                     return "UKSF_B_Medic";
                 case "5a42835b55d6109bf0b081bd": // "UKSF"
-                    if (ResolvePlayerUnitRole(player).Item1 == "1iC") {
+                    if (ResolvePlayerUnitRole(player) == 2) {
                         return "UKSF_B_Officer";
                     }
 
                     return "UKSF_B_Rifleman";
                 default:
-                    if (ResolvePlayerUnitRole(player).Item2 != -1) {
+                    if (ResolvePlayerUnitRole(player) != -1) {
                         return "UKSF_B_SectionLeader";
                     }
 
@@ -35,11 +40,11 @@ namespace MissionPatcher.Data {
             }
         }
 
-        private static Tuple<string, int> ResolvePlayerUnitRole(Player player) {
-            if (player.Unit.Roles.ContainsKey("1iC") && player.Unit.Roles["1iC"] == player) return new Tuple<string, int>("1iC", 2);
-            if (player.Unit.Roles.ContainsKey("2iC") && player.Unit.Roles["2iC"] == player) return new Tuple<string, int>("2iC", 1);
-            if (player.Unit.Roles.ContainsKey("NCOiC") && player.Unit.Roles["NCOiC"] == player) return new Tuple<string, int>("NCOiC", 0);
-            return new Tuple<string, int>("", -1);
+        private static int ResolvePlayerUnitRole(Player player) {
+            if (player.Unit.Roles.ContainsKey("1iC") && player.Unit.Roles["1iC"] == player) return 2;
+            if (player.Unit.Roles.ContainsKey("2iC") && player.Unit.Roles["2iC"] == player) return 1;
+            if (player.Unit.Roles.ContainsKey("NCOiC") && player.Unit.Roles["NCOiC"] == player) return 0;
+            return -1;
         }
 
         public static string ResolveCallsign(Unit unit, string defaultCallsign) {
@@ -127,8 +132,8 @@ namespace MissionPatcher.Data {
             }
 
             slots.Sort((a, b) => {
-                int roleA = ResolvePlayerUnitRole(a).Item2;
-                int roleB = ResolvePlayerUnitRole(b).Item2;
+                int roleA = ResolvePlayerUnitRole(a);
+                int roleB = ResolvePlayerUnitRole(b);
                 int rankA = lobby.Ranks.IndexOf(a.Rank);
                 int rankB = lobby.Ranks.IndexOf(b.Rank);
                 return roleA < roleB ? 1 : (roleA > roleB ? -1 : rankA < rankB ? -1 : (rankA > rankB ? 1 : string.CompareOrdinal(a.Name, b.Name)));
